@@ -336,6 +336,7 @@ Make it natural, use proper Australian super terminology (super, concessional co
             'content': """// Next.js Dashboard for ART Member Listening
 import React from 'react';
 import { Card, Table, Button, Input } from 'antd';
+import Image from 'next/image';
 
 export default function Dashboard() {
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -348,48 +349,109 @@ export default function Dashboard() {
     });
   };
 
+  const artBlue = '#1B6BB7';
+
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">ART Member Listening Dashboard</h1>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header with ART Branding */}
+      <header className="bg-white border-b-4 border-blue-600 px-8 py-4 shadow-sm" style={{ borderBottomColor: artBlue }}>
+        <div className="flex items-center gap-4">
+          <Image src="/logo.png" alt="Australian Retirement Trust" width={200} height={60} />
+          <div className="border-l-2 border-gray-300 pl-4">
+            <h1 className="text-2xl font-bold" style={{ color: artBlue }}>Member Listening Dashboard</h1>
+            <p className="text-sm text-gray-600">Powered by Databricks AI</p>
+          </div>
+        </div>
+      </header>
 
-      {/* Vector Search */}
-      <Card title=" Semantic Search" className="mb-6">
-        <Input.Search
-          placeholder="Find similar complaints or queries..."
-          onSearch={handleVectorSearch}
-          enterButton="Search"
-          size="large"
-        />
-      </Card>
+      <div className="p-8">
+        {/* Vector Search */}
+        <Card title="Semantic Search" className="mb-6" headStyle={{ backgroundColor: '#f0f7ff', color: artBlue, fontWeight: 'bold' }}>
+          <Input.Search
+            placeholder="Find similar complaints or queries..."
+            onSearch={handleVectorSearch}
+            enterButton="Search"
+            size="large"
+            style={{ maxWidth: '600px' }}
+          />
+        </Card>
 
-      {/* Executive Metrics */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <Card>
-          <h3>NPS Score</h3>
-          <p className="text-4xl">7.2</p>
+        {/* Executive Metrics */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <Card className="border-l-4" style={{ borderLeftColor: '#10b981' }}>
+            <h3 className="text-gray-600 text-sm font-semibold">NPS Score</h3>
+            <p className="text-4xl font-bold" style={{ color: '#10b981' }}>7.2</p>
+            <p className="text-xs text-gray-500 mt-1">Member satisfaction</p>
+          </Card>
+          <Card className="border-l-4" style={{ borderLeftColor: '#ef4444' }}>
+            <h3 className="text-gray-600 text-sm font-semibold">High Risk Members</h3>
+            <p className="text-4xl font-bold" style={{ color: '#ef4444' }}>24</p>
+            <p className="text-xs text-gray-500 mt-1">Require intervention</p>
+          </Card>
+          <Card className="border-l-4" style={{ borderLeftColor: artBlue }}>
+            <h3 className="text-gray-600 text-sm font-semibold">Avg Sentiment</h3>
+            <p className="text-4xl font-bold" style={{ color: artBlue }}>+0.3</p>
+            <p className="text-xs text-gray-500 mt-1">Overall member sentiment</p>
+          </Card>
+        </div>
+
+        {/* Member Table with real data */}
+        <Card title="High Risk Members" headStyle={{ backgroundColor: '#fef2f2', color: '#ef4444', fontWeight: 'bold' }}>
+          <Table
+            dataSource={""" + json.dumps(gold_data['member_360'][:10]) + """}
+            columns={[
+              { title: 'Member ID', dataIndex: 'member_id', key: 'member_id' },
+              {
+                title: 'Risk Score',
+                dataIndex: 'churn_risk_score',
+                key: 'churn_risk_score',
+                render: (score) => (
+                  <span style={{
+                    color: score > 0.7 ? '#ef4444' : score > 0.4 ? '#f59e0b' : '#10b981',
+                    fontWeight: 'bold'
+                  }}>
+                    {score.toFixed(2)}
+                  </span>
+                )
+              },
+              {
+                title: 'Risk Level',
+                dataIndex: 'risk_level',
+                key: 'risk_level',
+                render: (level) => (
+                  <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                    level === 'high' ? 'bg-red-100 text-red-700' :
+                    level === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                    'bg-green-100 text-green-700'
+                  }`}>
+                    {level.toUpperCase()}
+                  </span>
+                )
+              },
+              {
+                title: 'Sentiment',
+                dataIndex: 'avg_sentiment',
+                key: 'avg_sentiment',
+                render: (sentiment) => (
+                  <span style={{
+                    color: sentiment > 0 ? '#10b981' : '#ef4444',
+                    fontWeight: 'bold'
+                  }}>
+                    {sentiment > 0 ? '+' : ''}{sentiment.toFixed(2)}
+                  </span>
+                )
+              }
+            ]}
+            pagination={{ pageSize: 10 }}
+          />
         </Card>
-        <Card>
-          <h3>High Risk Members</h3>
-          <p className="text-4xl">24</p>
-        </Card>
-        <Card>
-          <h3>Avg Sentiment</h3>
-          <p className="text-4xl">+0.3</p>
-        </Card>
+
+        {/* Footer */}
+        <div className="mt-8 text-center text-sm text-gray-500">
+          <p>Australian Retirement Trust - Member Listening Platform</p>
+          <p className="mt-1">Powered by Databricks Foundation Models and Vector Search</p>
+        </div>
       </div>
-
-      {/* Member Table with real data */}
-      <Card title="High Risk Members">
-        <Table
-          dataSource={""" + json.dumps(gold_data['member_360'][:10]) + """}
-          columns={[
-            { title: 'Member ID', dataIndex: 'member_id' },
-            { title: 'Risk Score', dataIndex: 'churn_risk_score' },
-            { title: 'Risk Level', dataIndex: 'risk_level' },
-            { title: 'Sentiment', dataIndex: 'avg_sentiment' }
-          ]}
-        />
-      </Card>
     </div>
   );
 }
@@ -427,5 +489,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 """
         })
+
+        # Add ART logo to dashboard public folder
+        try:
+            from pathlib import Path
+            logo_path = Path(__file__).parent / 'logo.png'
+            if logo_path.exists():
+                dashboard_files.append({
+                    'filename': 'public/logo.png',
+                    'type': 'binary',
+                    'content': logo_path.read_bytes()
+                })
+        except Exception as e:
+            print(f"   Warning: Could not include logo.png: {e}")
 
         return dashboard_files
