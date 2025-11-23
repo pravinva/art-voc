@@ -18,9 +18,8 @@ class DatabricksFMClient:
             "Content-Type": "application/json"
         }
 
-        # Foundation Model endpoints
-        self.claude_endpoint = f"{workspace_url}/serving-endpoints/databricks-claude-sonnet-4-5/invocations"
-        self.llama_endpoint = f"{workspace_url}/serving-endpoints/databricks-meta-llama-3-1-70b-instruct/invocations"
+        # Foundation Model endpoints - use exact URLs
+        self.claude_endpoint = "https://e2-demo-field-eng.cloud.databricks.com/serving-endpoints/databricks-claude-sonnet-4-5/invocations"
 
         # Embedding endpoint for Vector Search
         self.embedding_endpoint = f"{workspace_url}/serving-endpoints/databricks-bge-large-en/invocations"
@@ -199,7 +198,8 @@ Return ONLY valid JSON (no markdown, no explanation):
   "confidence": <float from 0.0 to 1.0>
 }}"""
 
-        response = self.call_llama(prompt, max_tokens=200, temperature=0.1)
+        # Use Claude instead of Llama
+        response = self.call_claude("You are a sentiment analysis assistant. Return only JSON.", prompt, max_tokens=200, temperature=0.1)
 
         # Extract JSON from response
         try:
@@ -253,7 +253,8 @@ Predict churn risk and return ONLY valid JSON (no markdown):
   "recommended_actions": ["action 1", "action 2", ...]
 }}"""
 
-        response = self.call_llama(prompt, max_tokens=500, temperature=0.2)
+        # Use Claude instead of Llama
+        response = self.call_claude("You are a churn prediction assistant for superannuation funds. Return only JSON.", prompt, max_tokens=500, temperature=0.2)
 
         try:
             # Clean response
@@ -309,7 +310,8 @@ Predict propensity and return ONLY valid JSON:
   "recommended_offer": "specific offer text"
 }}"""
 
-        response = self.call_llama(prompt, max_tokens=400, temperature=0.2)
+        # Use Claude instead of Llama
+        response = self.call_claude("You are a propensity scoring assistant. Return only JSON.", prompt, max_tokens=400, temperature=0.2)
 
         try:
             response = response.strip()
