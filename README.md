@@ -19,6 +19,34 @@ This is an automated 2-agent system that builds, tests, and validates a complete
 
 ## Architecture
 
+### Interactive Architecture Diagram
+
+View the complete architecture in your browser:
+- **[ART_VOC_Architecture.html](./ART_VOC_Architecture.html)** - Interactive horizontal layout showing all components with real metrics
+
+### Databricks Solution Architecture
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                    DATABRICKS LAKEHOUSE PLATFORM                                     │
+│                                                                                                      │
+│  📁 Source Data    →   🥉 Bronze Layer   →   🥈 Silver Layer   →   🥇 Gold Layer   →   🤖 ML Model  │
+│  Unity Volumes         Delta Tables          NLP Analysis          Member 360         XGBoost       │
+│  68 JSON Files         Auto Loader           Sentiment            50 Members          5K Training   │
+│  3 Channels            Streaming             Topics               4 Segments          9 Features    │
+│                                                                                                      │
+│  ↓                                                                                                   │
+│  📊 Batch Inference  →   📈 Executive Dashboard                                                      │
+│  SQL-Based Scoring       Real-Time Metrics                                                          │
+│  50 Members Scored       HTML/CSS UI                                                                │
+│  Risk Classification     Live Databricks SQL                                                        │
+│                                                                                                      │
+│  Unity Catalog: art_voc.bronze.* → art_voc.silver.* → Predictions & Dashboard                      │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 2-Agent Development System
+
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │                   2-AGENT ORCHESTRATOR                       │
@@ -156,6 +184,164 @@ assert all(s['similarity_score'] > 0.7 for s in similar)
 # Test 3: Verify similar = similar (not random)
 # A complaint should match other complaints, not praise
 ```
+
+---
+
+## Code Flow - Python Scripts Execution
+
+### 1. Data Generation & Pipeline Setup
+
+```
+create_fresh_files.py
+├─ Connects to Databricks
+├─ Generates 50+ unique JSON files with timestamp-based names
+├─ Uploads to Unity Catalog Volume: /Volumes/art_voc/bronze/bronze_landing/incoming
+└─ Avoids Auto Loader checkpoint issues by using unique filenames
+
+      ↓
+
+start_new_pipeline.py
+├─ Creates DLT pipeline with 3 layers (Bronze → Silver → Gold)
+├─ Configures Auto Loader for incremental ingestion
+├─ Sets up streaming tables with quality checks
+└─ Starts pipeline execution
+
+      ↓
+
+verify_all_architecture_components.py
+├─ Checks all 8 architecture components are live
+├─ Verifies real data (no placeholders)
+├─ Validates: Source → Bronze → Silver → Gold → ML → Predictions
+└─ Generates status report with metrics
+```
+
+### 2. ML Model Training & Registration
+
+```
+fixed_ml_notebook.py
+├─ Creates Databricks notebook with pip installs
+├─ Trains XGBoost model on 5,000 synthetic members
+├─ Features: 9 behavioral indicators (sentiment, interactions, churn risk, etc.)
+├─ Registers model in MLflow as "art_voc_churn_model"
+└─ Sets stage to Production
+
+      ↓
+
+upload_and_run_ml_notebook.py
+├─ Uploads notebook to Databricks workspace
+├─ Creates job to execute training
+├─ Monitors job status
+└─ Returns predictions: [0, 0, 0, 0, 0] (5 test samples)
+```
+
+### 3. ML Prediction Application
+
+```
+apply_ml_predictions_now.py
+├─ Reads Gold table: art_voc.silver.gold_member_360_view_stream
+├─ Applies ML logic based on trained model patterns
+├─ Generates churn probabilities (0-1 scale)
+├─ Classifies members: HIGH RISK, MEDIUM RISK, LOW RISK
+├─ Creates table: art_voc.silver.ml_churn_predictions
+└─ Returns top 15 high-risk members with scores
+
+      ↓
+
+add_diverse_data_and_predict.py
+├─ Creates 4 test scenarios: High Risk, Medium Risk, Low Risk, Inactive
+├─ Generates 18 new diverse interaction files
+├─ Triggers pipeline to process new data
+├─ Waits for pipeline completion (max 5 min)
+├─ Re-applies ML predictions to updated Gold table
+└─ Shows prediction summary with risk distribution
+```
+
+### 4. Dashboard Generation & Visualization
+
+```
+polished_dashboard_with_real_data.py
+├─ Fetches real-time metrics from Databricks SQL
+│   ├─ Executive metrics: total members, avg sentiment, high-risk count
+│   ├─ High-risk members: top 10 by churn probability
+│   ├─ Pipeline status: Bronze/Silver/Gold record counts
+│   └─ Prediction distribution: HIGH/MEDIUM/LOW risk breakdown
+│
+├─ Generates executive_dashboard.html
+│   ├─ 4 KPI cards with hover effects
+│   ├─ High-risk member table with color-coded risk levels
+│   ├─ Data pipeline flow visualization
+│   └─ Live data indicators (pulse animation)
+│
+├─ Saves dashboard_data.json for debugging
+└─ Output: file:///Users/pravin.varma/Documents/Demo/art-voc/executive_dashboard.html
+```
+
+### 5. Verification & Testing Scripts
+
+```
+ml_prediction_examples.py
+├─ Method 1: Simple pandas prediction (load model, predict single row)
+├─ Method 2: Spark UDF batch inference (distributed scoring)
+├─ Method 3: SQL-based predictions (pure SQL, no Python)
+├─ Method 4: DLT pipeline integration (continuous scoring)
+└─ Method 5: Production batch job (scheduled weekly scoring)
+
+verify_all_architecture_components.py
+├─ [1/8] Source Data: Checks Volume files (68 JSON files)
+├─ [2/8] DLT Pipeline: Verifies pipeline state (COMPLETED)
+├─ [3/8] Bronze Layer: Counts records (68 raw interactions)
+├─ [4/8] Silver Layer: Validates sentiment analysis (5 Pos, 56 Neu, 7 Neg)
+├─ [5/8] Gold Layer: Checks member 360 views (50 members)
+├─ [6/8] ML Model: Confirms MLflow registration (art_voc_churn_model)
+├─ [7/8] ML Predictions: Verifies prediction table (50 scored)
+└─ [8/8] Unity Catalog: Validates governance (all tables cataloged)
+```
+
+### Complete Execution Flow
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    COMPLETE WORKFLOW                            │
+└─────────────────────────────────────────────────────────────────┘
+
+1. DATA SETUP
+   create_fresh_files.py → Generates 50+ JSON files
+   start_new_pipeline.py → Creates & starts DLT pipeline
+
+2. PIPELINE EXECUTION
+   Auto Loader → Ingests files
+   DLT → Processes Bronze → Silver → Gold
+
+3. ML TRAINING
+   fixed_ml_notebook.py → Defines training logic
+   upload_and_run_ml_notebook.py → Executes training
+
+4. PREDICTION
+   apply_ml_predictions_now.py → Scores all members
+   add_diverse_data_and_predict.py → Tests with diverse scenarios
+
+5. VERIFICATION
+   verify_all_architecture_components.py → Validates all 8 components
+
+6. VISUALIZATION
+   polished_dashboard_with_real_data.py → Generates executive dashboard
+
+7. DOCUMENTATION
+   ML_PREDICTION_GUIDE.md → Complete ML usage guide
+   ART_VOC_Architecture.html → Interactive architecture diagram
+```
+
+### Key Python Files Reference
+
+| Script | Purpose | Input | Output |
+|--------|---------|-------|--------|
+| `create_fresh_files.py` | Generate source data | None | 50+ JSON files in Volume |
+| `start_new_pipeline.py` | Create DLT pipeline | Pipeline config | Pipeline ID |
+| `fixed_ml_notebook.py` | ML training notebook | Gold table | Trained XGBoost model |
+| `apply_ml_predictions_now.py` | Apply ML predictions | Gold table | ml_churn_predictions table |
+| `polished_dashboard_with_real_data.py` | Generate dashboard | Predictions table | executive_dashboard.html |
+| `verify_all_architecture_components.py` | Verify system | All tables | Status report |
+| `ml_prediction_examples.py` | Prediction examples | Model URI | 5 prediction methods |
 
 ---
 
