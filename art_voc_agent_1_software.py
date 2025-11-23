@@ -171,7 +171,7 @@ Scenario: {scenario}
 Make it natural, use proper Australian super terminology (super, concessional contributions, beneficiary, etc.)
 """
             try:
-                transcript_text = self.fm_client.call_llama(prompt, max_tokens=200, temperature=0.8)
+                transcript_text = self.fm_client.call_claude("You are a call center transcript generator.", prompt, max_tokens=200, temperature=0.8)
             except Exception as e:
                 print(f"      Warning: FM API call failed, using template: {e}")
                 transcript_text = f"Member called about {scenario}. Discussion about their super account."

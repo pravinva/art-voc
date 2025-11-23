@@ -181,6 +181,9 @@ class TwoAgentOrchestrator:
         for artifact in artifacts:
             file_path = iteration_dir / artifact['filename']
 
+            # Create parent directories if needed (e.g., for public/logo.png)
+            file_path.parent.mkdir(parents=True, exist_ok=True)
+
             if artifact['type'] == 'code':
                 file_path.write_text(artifact['content'])
             elif artifact['type'] == 'json':
