@@ -349,66 +349,191 @@ export default function Dashboard() {
     });
   };
 
-  const artBlue = '#1B6BB7';
+  // ART Brand Colors (from australianretirementtrust.com.au)
+  const colors = {
+    artBlue: '#2454FF',
+    darkNavy: '#1e293b',
+    mediumGray: '#64748b',
+    lightGray: '#f8f9fa',
+    borderGray: '#e2e8f0',
+    successGreen: '#10b981',
+    warningOrange: '#f59e0b',
+    dangerRed: '#ef4444',
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: colors.lightGray }}>
       {/* Header with ART Branding */}
-      <header className="bg-white border-b-4 border-blue-600 px-8 py-4 shadow-sm" style={{ borderBottomColor: artBlue }}>
+      <header className="bg-white px-8 py-4" style={{
+        borderBottom: `4px solid ${colors.artBlue}`,
+        boxShadow: '0 2px 4px rgba(0,0,0,0.06)'
+      }}>
         <div className="flex items-center gap-4">
           <Image src="/logo.png" alt="Australian Retirement Trust" width={200} height={60} />
-          <div className="border-l-2 border-gray-300 pl-4">
-            <h1 className="text-2xl font-bold" style={{ color: artBlue }}>Member Listening Dashboard</h1>
-            <p className="text-sm text-gray-600">Powered by Databricks AI</p>
+          <div style={{ borderLeft: '2px solid #e2e8f0', paddingLeft: '16px' }}>
+            <h1 className="text-2xl font-bold" style={{ color: colors.artBlue, marginBottom: '2px' }}>
+              Member Listening Dashboard
+            </h1>
+            <p style={{ fontSize: '14px', color: colors.mediumGray, margin: 0 }}>
+              Powered by Databricks AI
+            </p>
           </div>
         </div>
       </header>
 
-      <div className="p-8">
+      <div className="p-8" style={{ maxWidth: '1280px', margin: '0 auto' }}>
         {/* Vector Search */}
-        <Card title="Semantic Search" className="mb-6" headStyle={{ backgroundColor: '#f0f7ff', color: artBlue, fontWeight: 'bold' }}>
+        <Card
+          title="Semantic Search"
+          className="mb-6"
+          style={{
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            border: `1px solid ${colors.borderGray}`
+          }}
+          headStyle={{
+            backgroundColor: colors.lightGray,
+            color: colors.artBlue,
+            fontWeight: 600,
+            fontSize: '18px',
+            borderRadius: '12px 12px 0 0'
+          }}
+        >
           <Input.Search
             placeholder="Find similar complaints or queries..."
             onSearch={handleVectorSearch}
-            enterButton="Search"
+            enterButton={<Button style={{
+              backgroundColor: colors.artBlue,
+              borderColor: colors.artBlue,
+              borderRadius: '24px',
+              fontWeight: 600
+            }}>Search</Button>}
             size="large"
-            style={{ maxWidth: '600px' }}
+            style={{
+              maxWidth: '600px',
+              borderRadius: '24px'
+            }}
           />
         </Card>
 
         {/* Executive Metrics */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <Card className="border-l-4" style={{ borderLeftColor: '#10b981' }}>
-            <h3 className="text-gray-600 text-sm font-semibold">NPS Score</h3>
-            <p className="text-4xl font-bold" style={{ color: '#10b981' }}>7.2</p>
-            <p className="text-xs text-gray-500 mt-1">Member satisfaction</p>
+        <div className="grid grid-cols-3 gap-6 mb-8">
+          <Card
+            style={{
+              borderRadius: '12px',
+              borderLeft: `4px solid ${colors.successGreen}`,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              transition: 'all 0.3s'
+            }}
+            bodyStyle={{ padding: '24px' }}
+            className="hover:shadow-lg hover:-translate-y-1"
+          >
+            <h3 style={{ color: colors.mediumGray, fontSize: '14px', fontWeight: 600, marginBottom: '8px' }}>
+              NPS Score
+            </h3>
+            <p style={{
+              fontSize: '48px',
+              fontWeight: 700,
+              color: colors.successGreen,
+              margin: '0 0 4px 0',
+              lineHeight: 1
+            }}>
+              7.2
+            </p>
+            <p style={{ fontSize: '12px', color: colors.mediumGray, margin: 0 }}>
+              Member satisfaction
+            </p>
           </Card>
-          <Card className="border-l-4" style={{ borderLeftColor: '#ef4444' }}>
-            <h3 className="text-gray-600 text-sm font-semibold">High Risk Members</h3>
-            <p className="text-4xl font-bold" style={{ color: '#ef4444' }}>24</p>
-            <p className="text-xs text-gray-500 mt-1">Require intervention</p>
+
+          <Card
+            style={{
+              borderRadius: '12px',
+              borderLeft: `4px solid ${colors.dangerRed}`,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              transition: 'all 0.3s'
+            }}
+            bodyStyle={{ padding: '24px' }}
+            className="hover:shadow-lg hover:-translate-y-1"
+          >
+            <h3 style={{ color: colors.mediumGray, fontSize: '14px', fontWeight: 600, marginBottom: '8px' }}>
+              High Risk Members
+            </h3>
+            <p style={{
+              fontSize: '48px',
+              fontWeight: 700,
+              color: colors.dangerRed,
+              margin: '0 0 4px 0',
+              lineHeight: 1
+            }}>
+              24
+            </p>
+            <p style={{ fontSize: '12px', color: colors.mediumGray, margin: 0 }}>
+              Require intervention
+            </p>
           </Card>
-          <Card className="border-l-4" style={{ borderLeftColor: artBlue }}>
-            <h3 className="text-gray-600 text-sm font-semibold">Avg Sentiment</h3>
-            <p className="text-4xl font-bold" style={{ color: artBlue }}>+0.3</p>
-            <p className="text-xs text-gray-500 mt-1">Overall member sentiment</p>
+
+          <Card
+            style={{
+              borderRadius: '12px',
+              borderLeft: `4px solid ${colors.artBlue}`,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              transition: 'all 0.3s'
+            }}
+            bodyStyle={{ padding: '24px' }}
+            className="hover:shadow-lg hover:-translate-y-1"
+          >
+            <h3 style={{ color: colors.mediumGray, fontSize: '14px', fontWeight: 600, marginBottom: '8px' }}>
+              Avg Sentiment
+            </h3>
+            <p style={{
+              fontSize: '48px',
+              fontWeight: 700,
+              color: colors.artBlue,
+              margin: '0 0 4px 0',
+              lineHeight: 1
+            }}>
+              +0.3
+            </p>
+            <p style={{ fontSize: '12px', color: colors.mediumGray, margin: 0 }}>
+              Overall member sentiment
+            </p>
           </Card>
         </div>
 
         {/* Member Table with real data */}
-        <Card title="High Risk Members" headStyle={{ backgroundColor: '#fef2f2', color: '#ef4444', fontWeight: 'bold' }}>
+        <Card
+          title="High Risk Members"
+          style={{
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            border: `1px solid ${colors.borderGray}`
+          }}
+          headStyle={{
+            backgroundColor: '#fef2f2',
+            color: colors.dangerRed,
+            fontWeight: 600,
+            fontSize: '18px',
+            borderRadius: '12px 12px 0 0'
+          }}
+        >
           <Table
             dataSource={""" + json.dumps(gold_data['member_360'][:10]) + """}
             columns={[
-              { title: 'Member ID', dataIndex: 'member_id', key: 'member_id' },
+              {
+                title: 'Member ID',
+                dataIndex: 'member_id',
+                key: 'member_id',
+                render: (id) => <span style={{ fontWeight: 600, color: colors.darkNavy }}>{id}</span>
+              },
               {
                 title: 'Risk Score',
                 dataIndex: 'churn_risk_score',
                 key: 'churn_risk_score',
                 render: (score) => (
                   <span style={{
-                    color: score > 0.7 ? '#ef4444' : score > 0.4 ? '#f59e0b' : '#10b981',
-                    fontWeight: 'bold'
+                    color: score > 0.7 ? colors.dangerRed : score > 0.4 ? colors.warningOrange : colors.successGreen,
+                    fontWeight: 700,
+                    fontSize: '16px'
                   }}>
                     {score.toFixed(2)}
                   </span>
@@ -419,12 +544,16 @@ export default function Dashboard() {
                 dataIndex: 'risk_level',
                 key: 'risk_level',
                 render: (level) => (
-                  <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                    level === 'high' ? 'bg-red-100 text-red-700' :
-                    level === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                    'bg-green-100 text-green-700'
-                  }`}>
-                    {level.toUpperCase()}
+                  <span style={{
+                    padding: '4px 12px',
+                    borderRadius: '12px',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    backgroundColor: level === 'high' ? '#fee2e2' : level === 'medium' ? '#fef3c7' : '#d1fae5',
+                    color: level === 'high' ? '#991b1b' : level === 'medium' ? '#92400e' : '#065f46'
+                  }}>
+                    {level}
                   </span>
                 )
               },
@@ -434,22 +563,45 @@ export default function Dashboard() {
                 key: 'avg_sentiment',
                 render: (sentiment) => (
                   <span style={{
-                    color: sentiment > 0 ? '#10b981' : '#ef4444',
-                    fontWeight: 'bold'
+                    color: sentiment > 0 ? colors.successGreen : colors.dangerRed,
+                    fontWeight: 700,
+                    fontSize: '16px'
                   }}>
                     {sentiment > 0 ? '+' : ''}{sentiment.toFixed(2)}
                   </span>
                 )
               }
             ]}
-            pagination={{ pageSize: 10 }}
+            pagination={{
+              pageSize: 10,
+              style: { marginTop: '24px' }
+            }}
+            style={{ marginTop: '16px' }}
           />
         </Card>
 
         {/* Footer */}
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>Australian Retirement Trust - Member Listening Platform</p>
-          <p className="mt-1">Powered by Databricks Foundation Models and Vector Search</p>
+        <div style={{
+          marginTop: '48px',
+          textAlign: 'center',
+          padding: '24px',
+          borderTop: `2px solid ${colors.borderGray}`
+        }}>
+          <p style={{
+            color: colors.mediumGray,
+            fontSize: '14px',
+            fontWeight: 600,
+            marginBottom: '4px'
+          }}>
+            Australian Retirement Trust - Member Listening Platform
+          </p>
+          <p style={{
+            color: colors.mediumGray,
+            fontSize: '12px',
+            margin: 0
+          }}>
+            Powered by Databricks Foundation Models and Vector Search
+          </p>
         </div>
       </div>
     </div>
